@@ -8,6 +8,7 @@
 
 using namespace std;
 
+//网络报文格式定义
 enum CMD {
 	CMD_LOGIN,
 	CMD_LOGIN_RESULT,
