@@ -153,7 +153,8 @@ int main() {
 		}
 		//nfds是一个整数值，是指fd_set集合中所有描述符（socket）的范围，而不是数量
 		//既是所有文件描述符最大值+1，在windows中这个参数可以写0
-		int ret=select(_sock+1,&fdRead,&fdWrite,&fdExp,nullptr);
+		timeval t = { 0,0 };
+		int ret=select(_sock+1,&fdRead,&fdWrite,&fdExp,&t);
 		if (ret < 0) {
 			std::cout << "select任务结束" << endl;
 			break;
