@@ -60,6 +60,18 @@ int main() {
 
 	while (true)
 	{
+		DataPackage dataPackage;
+		strcpy_s(dataPackage.msgCode, "GALED1");
+		strcpy_s(dataPackage.sendTime, "2020/4/11 09");
+		strcpy_s(dataPackage.bfno, "1");
+		strcpy_s(dataPackage.ledNo1, "1");
+		strcpy_s(dataPackage.data1, "BV,222.33,BP,11.2");
+		strcpy_s(dataPackage.ledNo2, "2");
+		strcpy_s(dataPackage.data2, "BV,444.33,BP,18.2");
+		send(_sock, (const char*)&dataPackage, sizeof(dataPackage), 0);
+		Sleep(3 * 1000);
+
+#if 0
 		//3)ÊäÈëÇëÇóÃüÁî
 		char cmdBuf[128] = {};
 		std::cin >> cmdBuf;
@@ -79,6 +91,7 @@ int main() {
 			strcpy_s(dataPackage.data2, "BV,444.33,BP,18.2");
 			send(_sock, (const char*)&dataPackage, sizeof(dataPackage), 0);
 		}
+#endif
 	}
 
 
