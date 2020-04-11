@@ -63,6 +63,8 @@ int processor(SOCKET _cSock) {
 	std::cout << "--数据2：" << dataPackage->data2 << endl;
 	std::cout << "---------单次接收完成" << endl;
 
+	return 0;
+
 }
 #if 1
 int main() {
