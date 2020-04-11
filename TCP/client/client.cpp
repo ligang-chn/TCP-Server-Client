@@ -5,60 +5,27 @@
 #pragma comment(lib,"ws2_32.lib")
 #include <iostream>
 #include <string.h>
+#include <thread>
 
 using namespace std;
 
-//网络报文格式定义
-enum CMD {
-	CMD_LOGIN,
-	CMD_LOGIN_RESULT,
-	CMD_LOGINOUT,
-	CMD_LOGINOUT_RESULT,
-	CMD_ERROR
-};
-
 struct DataHeader {
 	short dataLength;
-	short cmd;
 };
 
 //DataPackage
-struct Login : public DataHeader
+struct DataPackage : public DataHeader
 {
-	Login() {
-		dataLength = sizeof(Login);
-		cmd = CMD_LOGIN;
+	DataPackage() {
+		dataLength = sizeof(DataPackage);
 	}
-	char username[32];
-	char password[32];
-};
-struct LoginResult : public DataHeader
-{
-	LoginResult() {
-		dataLength = sizeof(LoginResult);
-		cmd = CMD_LOGIN_RESULT;
-		result = 0;
-	}
-	int result;
-};
-
-struct Loginout : public DataHeader
-{
-	Loginout() {
-		dataLength = sizeof(Loginout);
-		cmd = CMD_LOGINOUT;
-	}
-	char username[32];
-};
-
-struct LoginoutResult : public DataHeader
-{
-	LoginoutResult() {
-		dataLength = sizeof(LoginoutResult);
-		cmd = CMD_LOGINOUT_RESULT;
-		result = 0;
-	}
-	int result;
+	char msgCode[6];
+	char sendTime[14];
+	char bfno[1];
+	char ledNo1[1];
+	char data1[400];
+	char ledNo2[1];
+	char data2[400];
 };
 
 int main() {
@@ -101,31 +68,16 @@ int main() {
 			std::cout << "收到exit命令，任务结束" << endl;
 			break;
 		}
-		else if (0 == strcmp(cmdBuf, "login")) {
-			//5）向服务器发送请求命令
-			Login login ;
-			strcpy_s(login.username, "ligang");
-			strcpy_s(login.password, "123456");
-			send(_sock, (const char*)&login, sizeof(login), 0);
-
-			//接收服务器返回的数据
-			LoginResult loginRet = {};
-			recv(_sock, (char*)&loginRet, sizeof(loginRet), 0);
-			std::cout << "LoginResult: " << loginRet.result << endl;
-		}
-		else if (0 == strcmp(cmdBuf, "loginout")) {
-			Loginout logout;
-			strcpy_s(logout.username, "ligang");
-			
-			send(_sock, (const char*)&logout, sizeof(logout), 0);
-			//接收服务器返回的数据			
-			LoginoutResult logoutRet = {};
-			recv(_sock, (char*)&logoutRet, sizeof(logoutRet), 0);
-			std::cout << "LoginResult: " << logoutRet.result << endl;
-
-		}
-		else {
-			std::cout << "不支持的命令，请重新输入！" << endl;
+		else if (0 == strcmp(cmdBuf, "start")) {
+			DataPackage dataPackage;
+			strcpy_s(dataPackage.msgCode, "GALED1");
+			strcpy_s(dataPackage.sendTime, "2020/4/11 09");
+			strcpy_s(dataPackage.bfno, "1");
+			strcpy_s(dataPackage.ledNo1, "1");
+			strcpy_s(dataPackage.data1, "BV,222.33,BP,11.2");
+			strcpy_s(dataPackage.ledNo2, "2");
+			strcpy_s(dataPackage.data2, "BV,444.33,BP,18.2");
+			send(_sock, (const char*)&dataPackage, sizeof(dataPackage), 0);
 		}
 	}
 

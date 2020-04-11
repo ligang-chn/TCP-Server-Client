@@ -7,57 +7,35 @@
 #include<vector>
 using namespace std;
 
-enum CMD {
-	CMD_LOGIN,
-	CMD_LOGIN_RESULT,
-	CMD_LOGINOUT,
-	CMD_LOGINOUT_RESULT,
-	CMD_ERROR
-};
+//enum NAME {
+//	MSG_CODE,
+//	SEND_TIME,
+//	BFNO,
+//	LEDNO1,
+//	DATA1,
+//	LEDNO2,
+//	DATA2
+//};
 
 struct DataHeader {
 	short dataLength;
-	short cmd;
 };
 
 //DataPackage
-struct Login: public DataHeader
+struct DataPackage: public DataHeader
 {
-	Login() {
-		dataLength = sizeof(Login);
-		cmd = CMD_LOGIN;
+	DataPackage() {
+		dataLength = sizeof(DataPackage);
 	}
-	char username[32];
-	char password[32];
-};
-struct LoginResult: public DataHeader
-{
-	LoginResult() {
-		dataLength = sizeof(LoginResult);
-		cmd = CMD_LOGIN_RESULT;
-		result = 0;
-	}
-	int result;
+	char msgCode[6];
+	char sendTime[14];
+	char bfno[1];
+	char ledNo1[1];
+	char data1[400];
+	char ledNo2[1];
+	char data2[400];
 };
 
-struct Loginout: public DataHeader
-{
-	Loginout() {
-		dataLength = sizeof(Loginout);
-		cmd = CMD_LOGINOUT;
-	}
-	char username[32];
-};
-
-struct LoginoutResult: public DataHeader
-{
-	LoginoutResult() {
-		dataLength = sizeof(LoginoutResult);
-		cmd = CMD_LOGINOUT_RESULT;
-		result = 0;
-	}
-	int result;
-};
 
 std::vector<SOCKET> g_clients;
 
@@ -72,38 +50,21 @@ int processor(SOCKET _cSock) {
 		return -1;
 	}
 
-	switch (header->cmd)
-	{
-		case CMD_LOGIN:
-		{
-			recv(_cSock, szRecv + sizeof(DataHeader), header->dataLength - sizeof(DataHeader), 0);
-			Login* login = (Login*)szRecv;
-			std::cout << "收到命令：" << login->cmd << " ，数据长度：" << login->dataLength
-				<< " , 用户：" << login->username << " ，密码： " << login->password << endl;
+	recv(_cSock, szRecv + sizeof(DataHeader), header->dataLength - sizeof(DataHeader), 0);
+	DataPackage *dataPackage= (DataPackage*)szRecv;
+	std::cout << "收到数据长度：" << dataPackage->dataLength << endl;
+	std::cout << "数据如下：---------" << endl;
+	std::cout << "--电文号：" << dataPackage->msgCode << endl;
+	std::cout << "--发送时间：" << dataPackage->sendTime << endl;
+	std::cout << "--高炉号：" << dataPackage->bfno << endl;
+	std::cout << "--大屏1：" << dataPackage->ledNo1 << endl;
+	std::cout << "--数据1：" << dataPackage->data1 << endl;
+	std::cout << "--大屏2：" << dataPackage->ledNo2 << endl;
+	std::cout << "--数据2：" << dataPackage->data2 << endl;
+	std::cout << "---------单次接收完成" << endl;
 
-			LoginResult ret;
-			send(_cSock, (char*)&ret, sizeof(ret), 0);
-		}
-		break;
-		case CMD_LOGINOUT:
-		{
-			recv(_cSock, szRecv + sizeof(DataHeader), header->dataLength - sizeof(DataHeader), 0);
-			Loginout* loginout = (Loginout*)szRecv;
-			std::cout << "收到命令：" << loginout->cmd << " ，数据长度：" << loginout->dataLength
-				<< " , 用户：" << loginout->username << endl;
-
-			LoginoutResult ret;
-			send(_cSock, (char*)&ret, sizeof(ret), 0);
-		}
-		break;
-		default: {
-			DataHeader header = { 0,CMD_ERROR };
-			send(_cSock, (char*)&header, sizeof(header), 0);
-		}
-		break;
-	}
 }
-
+#if 1
 int main() {
 	//启动Windows socket 2.x环境
 	WORD ver = MAKEWORD(2, 2);
@@ -173,8 +134,6 @@ int main() {
 				g_clients.push_back(_cSock);
 				std::cout << "新客户端加入：IP = " << inet_ntoa(clientAddr.sin_addr) << " , socket = " << _cSock << endl;
 			}
-
-
 		}
 		for (size_t n = 0; n < fdRead.fd_count ; ++n) {
 			if (-1 == processor(fdRead.fd_array[n])) {
@@ -199,3 +158,4 @@ int main() {
 
 	return 0;
 }
+#endif
