@@ -22,17 +22,17 @@ struct DataHeader {
 };
 
 //DataPackage
-struct DataPackage: public DataHeader
+struct DataPackage : public DataHeader
 {
 	DataPackage() {
 		dataLength = sizeof(DataPackage);
 	}
-	char msgCode[6];
+	char msgCode[8];
 	char sendTime[14];
-	char bfno[1];
-	char ledNo1[1];
+	char bfno[2];
+	char ledNo1[2];
 	char data1[400];
-	char ledNo2[1];
+	char ledNo2[2];
 	char data2[400];
 };
 
@@ -49,11 +49,12 @@ int processor(SOCKET _cSock) {
 		std::cout << "客户端已退出，任务结束" << endl;
 		return -1;
 	}
+	
 
 	recv(_cSock, szRecv + sizeof(DataHeader), header->dataLength - sizeof(DataHeader), 0);
 	DataPackage *dataPackage= (DataPackage*)szRecv;
 	std::cout << "收到数据长度：" << dataPackage->dataLength << endl;
-	std::cout << "数据如下：---------" << endl;
+	std::cout << "socket = " << _cSock<<",数据如下：---------" << endl;
 	std::cout << "--电文号：" << dataPackage->msgCode << endl;
 	std::cout << "--发送时间：" << dataPackage->sendTime << endl;
 	std::cout << "--高炉号：" << dataPackage->bfno << endl;

@@ -19,12 +19,12 @@ struct DataPackage : public DataHeader
 	DataPackage() {
 		dataLength = sizeof(DataPackage);
 	}
-	char msgCode[6];
+	char msgCode[8];
 	char sendTime[14];
-	char bfno[1];
-	char ledNo1[1];
+	char bfno[2];
+	char ledNo1[2];
 	char data1[400];
-	char ledNo2[1];
+	char ledNo2[2];
 	char data2[400];
 };
 
@@ -61,13 +61,13 @@ int main() {
 	while (true)
 	{
 		DataPackage dataPackage;
-		strcpy_s(dataPackage.msgCode, "GALED1");
-		strcpy_s(dataPackage.sendTime, "2020/4/11 09");
+		strcpy_s(dataPackage.msgCode, "GALED01");
+		strcpy_s(dataPackage.sendTime, "2020/4/11");
 		strcpy_s(dataPackage.bfno, "1");
 		strcpy_s(dataPackage.ledNo1, "1");
-		strcpy_s(dataPackage.data1, "BV,222.33,BP,11.2");
+		strcpy_s(dataPackage.data1, "BV,222.33,BP,11.2,线渣面，1.34");
 		strcpy_s(dataPackage.ledNo2, "2");
-		strcpy_s(dataPackage.data2, "BV,444.33,BP,18.2");
+		strcpy_s(dataPackage.data2, "BV,444.33,BP,18.2,线渣面，9.34");
 		send(_sock, (const char*)&dataPackage, sizeof(dataPackage), 0);
 		Sleep(3 * 1000);
 
