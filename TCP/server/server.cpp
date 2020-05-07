@@ -27,12 +27,12 @@ struct DataPackage : public DataHeader
 	DataPackage() {
 		dataLength = sizeof(DataPackage);
 	}
-	char msgCode[8];
-	char sendTime[14];
-	char bfno[2];
-	char ledNo1[2];
+	char msgCode[8];//电文号
+	char sendTime[14];//发送时间
+	char bfno;//高炉号
+	char ledNo1;//大屏号1
 	char data1[400];
-	char ledNo2[2];
+	char ledNo2;//大屏号2
 	char data2[400];
 };
 
