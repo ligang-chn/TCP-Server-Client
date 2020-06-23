@@ -59,6 +59,7 @@ struct LoginoutResult: public DataHeader
 	int result;
 };
 
+
 std::vector<SOCKET> g_clients;
 
 int processor(SOCKET _cSock) {
